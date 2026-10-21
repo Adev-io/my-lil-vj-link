@@ -1,0 +1,19 @@
+{
+  "slug": "MyLilVJLink",
+  "name": "My lil VJ Link",
+  "version": "2.0.0",
+  "license": "MIT",
+  "brand": "A_Development",
+  "author": "Ari Klopfer / A_Development",
+  "authorEmail": "",
+  "authorUrl": "https://github.com/Adev-io",
+  "pluginUrl": "",
+  "manualUrl": "https://github.com/Adev-io/my-lil-vj-link#readme",
+  "sourceUrl": "https://github.com/Adev-io/my-lil-vj-link",
+  "donateUrl": "",
+  "changelogUrl": "",
+  "description": "Two-way audio-reactive bridge to the My Lil VJ visuals app over a loopMIDI port",
+  "modules": [
+    { "slug": "VJLink", "name": "VJ Link", "description": "Sends your patch's audio analysis to My Lil VJ and turns its levels, LFOs, camera motion, hand tracking and show events into CV", "tags": ["Visual", "MIDI", "Utility"] }
+  ]
+}
