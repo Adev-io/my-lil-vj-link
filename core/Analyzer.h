@@ -53,8 +53,8 @@ public:
         maxBass = maxMid = maxHigh = maxVol = 0.1f;
         pulseV = 0.f;
         sinceBeat = 1e9;
-        bassMax = std::max (1, (int) std::floor (250.0 * kFftSize / sr));
-        midMax = std::max (bassMax + 1, (int) std::floor (2000.0 * kFftSize / sr));
+        bassMax = std::max (1, std::min (kBins - 2, (int) std::floor (250.0 * kFftSize / sr)));
+        midMax = std::max (bassMax + 1, std::min (kBins - 1, (int) std::floor (2000.0 * kFftSize / sr)));
         out = Frame();
     }
 

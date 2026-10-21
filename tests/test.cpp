@@ -108,6 +108,13 @@ int main()
         for (int i = 0; i < (int) sr; ++i) frames += a.push (0.f) ? 1 : 0;
         check (frames == 60, "60 frames per second", frames);
     }
+    { // ring order: an impulse 800 samples old sits mid-window (oldest sample first), not on the window's zero edge
+        vjlink::Analyzer a; a.prepare (sr);
+        bool ready = a.push (1.f);
+        for (int i = 1; i < 800; ++i) ready = a.push (0.f);
+        check (ready, "frame lands on sample 800 at 48 kHz");
+        check (a.fftBytes()[10] > 90, "impulse windowed mid-window, oldest sample first", a.fftBytes()[10]);
+    }
 
     // ---- protocol golden vectors (docs/PROTOCOL.md)
     {
@@ -122,6 +129,8 @@ int main()
         check (sameBytes (v, { 0xB0, 0x73, 0x7F }), "spectrum band 13 = 255");
         v.clear(); s.level (vjlink::kToVj, vjlink::CC_BASS, 0.5f, v);
         check (v.empty(), "unchanged level sends nothing", (double) v.size());
+        v.clear(); s.band (13, 254, v);
+        check (v.empty(), "a band change below 7-bit resolution sends nothing", (double) v.size());
     }
     { // a whole frame: 5 levels (10 msgs) + 16 bands the first time, nothing the second, everything again at frame 60
         vjlink::Sender s; vjlink::Frame f; f.bass = 0.3f; f.spectrum[2] = 200;
@@ -140,6 +149,10 @@ int main()
         check (std::fabs (r.values[vjlink::CC_MOTION_E] - 8192 / 16383.f) < 1e-6f, "MSB alone: coarse value", r.values[6]);
         r.handle (0xB1, 0x26, 0x00);
         check (std::fabs (r.values[vjlink::CC_MOTION_E] - 8192 / 16383.f) < 1e-6f, "decode B1 06 40, B1 26 00", r.values[6]);
+        r.handle (0xB1, 0x26, 0x7F);
+        check (std::fabs (r.values[vjlink::CC_MOTION_E] - (64 * 128 + 127) / 16383.f) < 1e-6f, "LSB refines the MSB", r.values[6]);
+        r.handle (0xB1, 0x70, 0x7F);
+        check (std::fabs (r.values[vjlink::CC_MOTION_E] - (64 * 128 + 127) / 16383.f) < 1e-6f, "spectrum CC on the receive side is ignored", r.values[6]);
         r.handle (0xB1, 0x06, 0x7F); r.handle (0xB1, 0x26, 0x7F);
         check (r.values[vjlink::CC_MOTION_E] == 1.f, "14-bit full scale = 1.0", r.values[6]);
         r.handle (0xB0, 0x06, 0x00);
