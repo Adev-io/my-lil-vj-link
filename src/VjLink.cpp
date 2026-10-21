@@ -24,6 +24,7 @@ struct VjLink : Module
     vjlink::Sender sender;
     vjlink::Receiver receiver;
     std::vector<vjlink::Msg> msgs;
+    midi::Message outMsg;           // reused: Message() allocates its 3-byte vector
     dsp::PulseGenerator gates[3];   // beat, clip, deck, as sent by the VJ
     float preparedSr = 0.f;
     float sinceVj = 1e9f;           // seconds since the last channel 2 message
@@ -50,9 +51,8 @@ struct VjLink : Module
 
     void send (const vjlink::Msg& m)
     {
-        midi::Message out;   // 3 bytes by default
-        out.bytes[0] = m.status; out.bytes[1] = m.data1; out.bytes[2] = m.data2;
-        midiOut.sendMessage (out);
+        outMsg.bytes[0] = m.status; outMsg.bytes[1] = m.data1; outMsg.bytes[2] = m.data2;
+        midiOut.sendMessage (outMsg);
     }
 
     void process (const ProcessArgs& args) override
@@ -99,6 +99,7 @@ struct VjLink : Module
     {
         midiOut.reset(); midiIn.reset(); fixChannels();
         sender.reset(); preparedSr = 0.f;
+        receiver = vjlink::Receiver(); for (dsp::PulseGenerator& g : gates) g.reset();
     }
 
     json_t* dataToJson() override
