@@ -38,3 +38,9 @@ target_include_directories(MyLilVJLinkTest PRIVATE Source ../core)
 target_compile_definitions(MyLilVJLinkTest PRIVATE JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)
 target_link_libraries(MyLilVJLinkTest PRIVATE juce::juce_audio_utils juce::juce_recommended_config_flags)
 add_test(NAME smoke COMMAND MyLilVJLinkTest)
+
+# Host check: loads the built VST3 like a DAW and plays it in real time. Needs the lilvj port, so it is not a ctest.
+juce_add_console_app(MyLilVJLinkHostCheck PRODUCT_NAME "MyLilVJLinkHostCheck")
+target_sources(MyLilVJLinkHostCheck PRIVATE Tests/hostcheck.cpp)
+target_compile_definitions(MyLilVJLinkHostCheck PRIVATE JUCE_PLUGINHOST_VST3=1 JUCE_WEB_BROWSER=0 JUCE_USE_CURL=0)
+target_link_libraries(MyLilVJLinkHostCheck PRIVATE juce::juce_audio_processors juce::juce_recommended_config_flags)
