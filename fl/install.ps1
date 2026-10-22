@@ -25,9 +25,12 @@ if ((Get-FileHash -LiteralPath $copied).Hash -ne (Get-FileHash -LiteralPath $scr
 # 2. VST3: Common Files needs admin, so one elevated copy (replaces an older My lil VJ Link.vst3 only).
 $vst3 = Join-Path $env:CommonProgramFiles 'VST3'
 $target = Join-Path $vst3 $name
-$cmd = "if (Test-Path -LiteralPath '$target') { Remove-Item -LiteralPath '$target' -Recurse -Force }; " +
-       "Copy-Item -LiteralPath '$Bundle' -Destination '$vst3' -Recurse -Force"
-Start-Process pwsh -Verb RunAs -Wait -ArgumentList '-NoProfile', '-Command', $cmd
+function Quote([string]$s) { "'" + $s.Replace("'", "''") + "'" }   # a path with an apostrophe stays one literal
+$cmd = "if (Test-Path -LiteralPath $(Quote $target)) { Remove-Item -LiteralPath $(Quote $target) -Recurse -Force }; " +
+       "Copy-Item -LiteralPath $(Quote $Bundle) -Destination $(Quote $vst3) -Recurse -Force"
+$shell = if (Get-Command pwsh -ErrorAction SilentlyContinue) { 'pwsh' } else { 'powershell' }   # stock Windows has only 5.1
+$encoded = [Convert]::ToBase64String([Text.Encoding]::Unicode.GetBytes($cmd))   # no command-line quoting to get wrong
+Start-Process $shell -Verb RunAs -Wait -ArgumentList '-NoProfile', '-EncodedCommand', $encoded
 $bin = "Contents\x86_64-win\$name"
 if (-not (Test-Path -LiteralPath (Join-Path $target $bin))) { throw "VST3 not installed (admin prompt declined?): $target" }
 if ((Get-FileHash -LiteralPath (Join-Path $target $bin)).Hash -ne (Get-FileHash -LiteralPath (Join-Path $Bundle $bin)).Hash) { throw "VST3 copy differs: $target" }
