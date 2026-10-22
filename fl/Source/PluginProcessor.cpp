@@ -8,6 +8,9 @@ static juce::AudioProcessorValueTreeState::ParameterLayout makeLayout()
     juce::AudioProcessorValueTreeState::ParameterLayout l;
     l.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID { "sens", 1 }, "Beat threshold",
                                                         juce::NormalisableRange<float> (0.25f, 2.f), 0.5f));
+    l.add (std::make_unique<juce::AudioParameterFloat> (juce::ParameterID { "trim", 1 }, "Input trim",
+                                                        juce::NormalisableRange<float> (-40.f, 20.f), -20.f,
+                                                        juce::AudioParameterFloatAttributes().withLabel ("dB")));
     return l;
 }
 
@@ -41,6 +44,7 @@ void VjLinkProcessor::processBlock (juce::AudioBuffer<float>& buffer, juce::Midi
     juce::ScopedNoDenormals noDenormals;
     if (resend.exchange (false)) sender.reset();
     analyzer.setSensitivity (params.getRawParameterValue ("sens")->load());
+    analyzer.setTrimDb (params.getRawParameterValue ("trim")->load());
     const int chans = juce::jmin (2, buffer.getNumChannels());
     if (chans == 0) return;
     const float* l = buffer.getReadPointer (0);

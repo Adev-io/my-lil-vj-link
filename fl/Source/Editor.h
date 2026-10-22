@@ -1,4 +1,4 @@
-// Editor.h: port picker, beat threshold, link LED and the same meters as the Rack panel.
+// Editor.h: port picker, input trim, beat threshold, link LED and the same meters as the Rack panel.
 // Author: Ari Klopfer / A_Development · AGPL-3.0-or-later (links JUCE, see LICENSE)
 #pragma once
 #include "PluginProcessor.h"
@@ -15,10 +15,10 @@ private:
     void refreshPorts();
 
     VjLinkProcessor& proc;
-    juce::Label portLabel, sensLabel;
+    juce::Label portLabel, trimLabel, sensLabel;
     juce::ComboBox port;
     juce::TextButton rescan { "Rescan" };
-    juce::Slider sens;
-    juce::AudioProcessorValueTreeState::SliderAttachment sensAttach;
+    juce::Slider trim, sens;
+    juce::AudioProcessorValueTreeState::SliderAttachment trimAttach, sensAttach;
     juce::Rectangle<int> meterArea;
 };

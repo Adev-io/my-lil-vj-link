@@ -8,12 +8,16 @@ const juce::Colour ink (0xff16161a), lime (0xffc8ff3a), dimLime (0xff6e8c20), ma
 }
 
 VjLinkEditor::VjLinkEditor (VjLinkProcessor& p)
-    : AudioProcessorEditor (p), proc (p), sensAttach (p.params, "sens", sens)
+    : AudioProcessorEditor (p), proc (p), trimAttach (p.params, "trim", trim), sensAttach (p.params, "sens", sens)
 {
     portLabel.setText ("loopMIDI port", juce::dontSendNotification);
     sensLabel.setText ("Beat threshold", juce::dontSendNotification);
-    sens.setSliderStyle (juce::Slider::LinearHorizontal);
-    sens.setTextBoxStyle (juce::Slider::TextBoxRight, false, 50, 20);
+    trimLabel.setText ("Input trim", juce::dontSendNotification);
+    for (juce::Slider* s : { &trim, &sens })
+    {
+        s->setSliderStyle (juce::Slider::LinearHorizontal);
+        s->setTextBoxStyle (juce::Slider::TextBoxRight, false, 60, 20);
+    }
     port.setTextWhenNothingSelected ("no port: make one named lilvj in loopMIDI, then Rescan");
     port.onChange = [this] {
         const auto name = port.getText();
@@ -21,10 +25,11 @@ VjLinkEditor::VjLinkEditor (VjLinkProcessor& p)
     };
     rescan.onClick = [this] { refreshPorts(); };
     for (juce::Component* c : { (juce::Component*) &portLabel, (juce::Component*) &port, (juce::Component*) &rescan,
+                                (juce::Component*) &trimLabel, (juce::Component*) &trim,
                                 (juce::Component*) &sensLabel, (juce::Component*) &sens })
         addAndMakeVisible (c);
     refreshPorts();
-    setSize (460, 260);
+    setSize (460, 290);
     startTimerHz (30);
 }
 
@@ -78,6 +83,10 @@ void VjLinkEditor::resized()
     portLabel.setBounds (row.removeFromLeft (100));
     rescan.setBounds (row.removeFromRight (70));
     port.setBounds (row.reduced (4, 0));
+    r.removeFromTop (6);
+    row = r.removeFromTop (24);
+    trimLabel.setBounds (row.removeFromLeft (100));
+    trim.setBounds (row);
     r.removeFromTop (6);
     row = r.removeFromTop (24);
     sensLabel.setBounds (row.removeFromLeft (100));
