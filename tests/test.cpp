@@ -36,6 +36,7 @@ vjlink::Frame run (vjlink::Analyzer& a, double seconds, double (*sig) (double), 
 double silence (double) { return 0.0; }
 double low (double t) { return 0.5 * std::sin (2 * pi * 60 * t); }
 double treble (double t) { return 0.5 * std::sin (2 * pi * 3000 * t); }
+double full (double t) { return std::sin (2 * pi * 60 * t); }
 double kick (double t, double start) { const double u = t - start; return u >= 0 && u < 0.08 ? 0.9 * std::exp (-u * 40) * std::sin (2 * pi * 60 * u) : 0.0; }
 double kicks (double t) { double s = 0; for (int k = 0; k < 8; ++k) s += kick (t, 0.25 + 0.5 * k); return s; }
 double flam (double t) { return kick (t, 0.25) + kick (t, 0.35); }
@@ -114,6 +115,23 @@ int main()
         for (int i = 1; i < 800; ++i) ready = a.push (0.f);
         check (ready, "frame lands on sample 800 at 48 kHz");
         check (a.fftBytes()[10] > 90, "impulse windowed mid-window, oldest sample first", a.fftBytes()[10]);
+    }
+    { // input trim: a full-scale tone pins the VJ's -30 dB ceiling; -20 dB brings it back under; 0 dB is the identity
+        auto peak = [] (const vjlink::Analyzer& a) -> int {
+            int p = 0;
+            for (int i = 0; i < vjlink::kBins; ++i) p = std::max (p, (int) a.fftBytes()[i]);
+            return p;
+        };
+        vjlink::Analyzer a; a.prepare (sr);
+        run (a, 0.5, full);
+        check (peak (a) == 255, "trim 0 dB: a full-scale tone pins the ceiling", peak (a));
+        a.setTrimDb (-20.f);
+        run (a, 0.5, full);
+        const int trimmed = peak (a);
+        check (trimmed > 200 && trimmed < 255, "trim -20 dB: the peak drops under the ceiling", trimmed);
+        a.setTrimDb (0.f);
+        run (a, 0.5, full);
+        check (peak (a) == 255, "trim back to 0 dB: the identity again", peak (a));
     }
 
     // ---- protocol golden vectors (docs/PROTOCOL.md)

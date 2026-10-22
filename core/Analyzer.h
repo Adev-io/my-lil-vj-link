@@ -61,10 +61,19 @@ public:
     // Beat threshold, as the VJ's sensitivity: higher means fewer beats.
     void setSensitivity (float s) { sens = std::min (2.f, std::max (0.25f, s)); }
 
+    // Input trim in dB, applied before the analysis (0 dB = as is). A mixed song at Rack's ±5 V or an FL master near
+    // 0 dBFS pins most bins at the VJ's -30 dB ceiling and flattens the bands; about -20 dB brings the motion back.
+    void setTrimDb (float db)
+    {
+        if (db == trimDb) return;
+        trimDb = db;
+        gain = std::pow (10.f, db / 20.f);
+    }
+
     // One mono sample in. True when a new frame is ready in frame().
     bool push (float x)
     {
-        ring[(size_t) pos] = x;
+        ring[(size_t) pos] = x * gain;
         pos = (pos + 1) % kFftSize;
         sinceBeat += 1.0;
         if (--untilHop > 0) return false;
@@ -138,7 +147,7 @@ private:
 
     double sr = 0.0, sinceBeat = 1e9;
     int hop = 1, untilHop = 1, pos = 0, fluxIdx = 0, bassMax = 1, midMax = 2;
-    float sens = 0.5f, maxBass = 0.1f, maxMid = 0.1f, maxHigh = 0.1f, maxVol = 0.1f, pulseV = 0.f;
+    float sens = 0.5f, maxBass = 0.1f, maxMid = 0.1f, maxHigh = 0.1f, maxVol = 0.1f, pulseV = 0.f, trimDb = 0.f, gain = 1.f;
     std::vector<float> ring, prev, fluxRing;
     std::vector<double> win, smooth;
     std::vector<std::complex<double>> buf;
