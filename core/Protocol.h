@@ -57,7 +57,7 @@ public:
     // One analysis frame, DAW -> VJ.
     void encodeToVj (const Frame& f, std::vector<Msg>& out)
     {
-        if (++frames % 60 == 0) reset();   // once a second at 60 frames/s, so a late listener catches up
+        if (++frames >= 60) { frames = 0; reset(); }   // once a second at 60 frames/s, so a late listener catches up
         level (kToVj, CC_BASS, f.bass, out);
         level (kToVj, CC_MID, f.mid, out);
         level (kToVj, CC_HIGH, f.high, out);

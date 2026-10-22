@@ -43,6 +43,7 @@ struct VjLink : Module
             "VJ LFO 1 (±5 V)", "VJ LFO 2 (±5 V)", "VJ LFO 3 (±5 V)", "VJ LFO 4 (±5 V)", "Clip change (gate)", "Deck switch (gate)" };
         for (int i = 0; i < OUTPUTS_LEN; ++i) configOutput (i, names[i]);
         msgs.reserve (64);
+        analyzer.prepare (44100.0);   // allocate here; process() re-prepares at the real rate into the same capacity
         fixChannels();
     }
 
