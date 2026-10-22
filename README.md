@@ -39,6 +39,8 @@ Two plugins, one protocol ([docs/PROTOCOL.md](docs/PROTOCOL.md)):
 | LFO 1–4 | the VJ's four LFOs, ±5 V |
 | BEAT, CLIP, DECK | 10 ms gates: VJ beat, clip change, deck switch |
 
+TRIM sets the level going into the analyser (default −20 dB). A mixed song at full Rack level (±5 V) pins the
+VJ's meters near the top, and then nothing seems to react: turn TRIM down until the lime bars move with the music.
 BEAT THR sets the beat threshold for the audio you send (higher = fewer beats). The BEAT light flashes on your beats;
 LINK is lit while the VJ is talking back. The display shows what goes out (lime) and what comes back (magenta).
 

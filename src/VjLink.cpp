@@ -8,7 +8,7 @@
 
 struct VjLink : Module
 {
-    enum ParamId { SENS_PARAM, PARAMS_LEN };
+    enum ParamId { SENS_PARAM, TRIM_PARAM, PARAMS_LEN };   // append only: patch files store params by id
     enum InputId { IN_L_INPUT, IN_R_INPUT, INPUTS_LEN };
     enum OutputId
     {
@@ -34,6 +34,7 @@ struct VjLink : Module
     {
         config (PARAMS_LEN, INPUTS_LEN, OUTPUTS_LEN, LIGHTS_LEN);
         configParam (SENS_PARAM, 0.25f, 2.f, 0.5f, "Beat threshold (higher = fewer beats)");
+        configParam (TRIM_PARAM, -40.f, 20.f, -20.f, "Input trim (lower it if the meter's lime bars sit at the top)", " dB");
         configInput (IN_L_INPUT, "Audio left (or mono)");
         configInput (IN_R_INPUT, "Audio right (normalled to left)");
         const char* names[OUTPUTS_LEN] = {
@@ -60,6 +61,7 @@ struct VjLink : Module
     {
         if (args.sampleRate != preparedSr) { preparedSr = args.sampleRate; analyzer.prepare (args.sampleRate); }
         analyzer.setSensitivity (params[SENS_PARAM].getValue());
+        analyzer.setTrimDb (params[TRIM_PARAM].getValue());
 
         const float l = inputs[IN_L_INPUT].getVoltage();
         const float x = inputs[IN_R_INPUT].isConnected() ? 0.5f * (l + inputs[IN_R_INPUT].getVoltage()) : l;
@@ -182,6 +184,7 @@ struct VjLinkWidget : ModuleWidget
         addInput (createInputCentered<PJ301MPort> (at (L::IN_L_INPUT), module, VjLink::IN_L_INPUT));
         addInput (createInputCentered<PJ301MPort> (at (L::IN_R_INPUT), module, VjLink::IN_R_INPUT));
         addParam (createParamCentered<Rogan1PSWhite> (at (L::SENS_PARAM), module, VjLink::SENS_PARAM));
+        addParam (createParamCentered<Rogan1PSWhite> (at (L::TRIM_PARAM), module, VjLink::TRIM_PARAM));
         addChild (createLightCentered<MediumLight<LimeLight>> (at (L::BEAT_LIGHT), module, VjLink::BEAT_LIGHT));
         addChild (createLightCentered<MediumLight<MagentaLight>> (at (L::LINK_LIGHT), module, VjLink::LINK_LIGHT));
 

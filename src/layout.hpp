@@ -2,11 +2,12 @@
 #pragma once
 namespace layout {
 namespace vjlink {
-constexpr float IN_L_INPUT[2] = {12.00f, 70.00f};
-constexpr float IN_R_INPUT[2] = {26.00f, 70.00f};
-constexpr float SENS_PARAM[2] = {46.00f, 70.00f};
-constexpr float BEAT_LIGHT[2] = {66.00f, 70.00f};
-constexpr float LINK_LIGHT[2] = {84.00f, 70.00f};
+constexpr float IN_L_INPUT[2] = {10.00f, 70.00f};
+constexpr float IN_R_INPUT[2] = {22.00f, 70.00f};
+constexpr float TRIM_PARAM[2] = {37.00f, 70.00f};
+constexpr float SENS_PARAM[2] = {53.00f, 70.00f};
+constexpr float BEAT_LIGHT[2] = {70.00f, 70.00f};
+constexpr float LINK_LIGHT[2] = {86.00f, 70.00f};
 constexpr float BASS_OUTPUT[2] = {10.50f, 86.50f};
 constexpr float MID_OUTPUT[2] = {26.60f, 86.50f};
 constexpr float HIGH_OUTPUT[2] = {42.70f, 86.50f};

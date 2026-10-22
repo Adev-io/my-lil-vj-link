@@ -63,9 +63,10 @@ OUT_IDS = (
     ('LFO1', 'LFO2', 'LFO3', 'LFO4', 'CLIP', 'DECK'),
 )
 LINK = [
-    ('IN_L_INPUT', 'in', 12, 70, 'IN L'), ('IN_R_INPUT', 'in', 26, 70, 'IN R'),
-    ('SENS_PARAM', 'knob', 46, 70, 'BEAT THR'),
-    ('BEAT_LIGHT', 'light', 66, 70, 'BEAT'), ('LINK_LIGHT', 'light', 84, 70, 'LINK'),
+    ('IN_L_INPUT', 'in', 10, 70, 'IN L'), ('IN_R_INPUT', 'in', 22, 70, 'IN R'),
+    ('TRIM_PARAM', 'knob', 37, 70, 'TRIM'),
+    ('SENS_PARAM', 'knob', 53, 70, 'BEAT THR'),
+    ('BEAT_LIGHT', 'light', 70, 70, 'BEAT'), ('LINK_LIGHT', 'light', 86, 70, 'LINK'),
 ] + [(OUT_IDS[r][c] + '_OUTPUT', 'out', C[c], ROWS[r], OUT_LABELS[r][c]) for r in range(3) for c in range(6)]
 
 
