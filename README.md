@@ -22,9 +22,11 @@ Two plugins, one protocol ([docs/PROTOCOL.md](docs/PROTOCOL.md)):
 2. My Lil VJ (Studio): Audio Reactivity → **Link (DAW)**. The LINK row reads "DAW connected" while audio plays.
 3. Your DAW:
    - **VCV Rack:** add VJ Link. Set TO VJ and FROM VJ to `lilvj`. Patch audio into IN L (and IN R).
-   - **FL Studio:** put My lil VJ Link on the mixer track you want the visuals to follow (the master is fine). It
-     picks the `lilvj` port by itself. For VJ → FL: Options → MIDI settings, enable `lilvj` as an input, then
-     right-click any knob → Link to controller and move the VJ source you want (channel 2).
+   - **FL Studio:** run `fl\install.ps1` (or copy by hand, see [`fl/INSTALL.txt`](fl/INSTALL.txt)), then put
+     My lil VJ Link on the mixer track you want the visuals to follow (the master is fine). It picks the `lilvj`
+     port by itself; Input trim works like TRIM on the Rack module. For VJ → FL: Options → MIDI settings, enable
+     `lilvj` as an input with Controller type **My lil VJ Link**, then right-click any knob → Link to controller
+     and move the VJ source you want (channel 2).
 
 ## VCV Rack module
 

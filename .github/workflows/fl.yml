@@ -55,6 +55,9 @@ jobs:
           Copy-Item fl/LICENSE pkg/LICENSE.txt
           Copy-Item fl/INSTALL.txt pkg/INSTALL.txt
           Copy-Item docs/PROTOCOL.md pkg/PROTOCOL.md
+          Copy-Item fl/install.ps1 pkg/install.ps1
+          New-Item -ItemType Directory -Force pkg/script | Out-Null
+          Copy-Item fl/script/device_MyLilVJLink.py pkg/script/
           Compress-Archive -Path pkg/* -DestinationPath "My-lil-VJ-Link-${env:GITHUB_REF_NAME}-windows-x64.zip"
 
       - name: Release

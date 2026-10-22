@@ -1,15 +1,20 @@
 My lil VJ Link - install (Windows 10/11, 64-bit)
 
 1. Install loopMIDI (tobias-erichsen.de) and create one port named lilvj.
-2. Copy the whole folder "My lil VJ Link.vst3" to C:\Program Files\Common Files\VST3\  (needs admin).
+2. Close FL Studio. Right-click install.ps1 > Run with PowerShell (it asks for admin once). It copies
+   "My lil VJ Link.vst3" to C:\Program Files\Common Files\VST3\ and the controller script to
+   Documents\Image-Line\FL Studio\Settings\Hardware\My lil VJ Link\. By hand: copy those two the same way.
 3. FL Studio: Options > Manage plugins > Find installed plugins. Put "My lil VJ Link" in an effect slot of the
    mixer track the visuals should follow (the master is fine). Other hosts: rescan plugins, insert as an effect.
 4. The plugin picks the lilvj port by itself (else the first loopMIDI port). Change it in the plugin window;
    press Rescan after creating a port while FL is open.
-5. My Lil VJ (Studio): Audio Reactivity > Link (DAW).
+5. Input trim (default -20 dB): a mastered mix is louder than the VJ expects and pins its meters. If the lime
+   bars sit at the top, turn it down; if they barely rise, turn it up.
+6. My Lil VJ (Studio): Audio Reactivity > Link (DAW).
 
-VJ to FL: Options > MIDI settings, enable lilvj as an input. Right-click any knob > Link to controller, then move
-the source in My Lil VJ: it arrives on channel 2 (CC 1-15, see docs/PROTOCOL.md).
+VJ to FL: Options > MIDI settings > Input: enable lilvj and set its Controller type to "My lil VJ Link". The
+script drops the plugin's own channel 1 echo, so FL only hears the VJ. Then right-click any knob > Link to
+controller and move the source in My Lil VJ: it arrives on channel 2 (CC 1-15, see PROTOCOL.md).
 
 Audio passes through unchanged. The files are not code-signed. If SmartScreen warns, choose More info > Run anyway.
 
