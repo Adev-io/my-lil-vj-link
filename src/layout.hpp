@@ -4,6 +4,7 @@ namespace layout {
 namespace vjlink {
 constexpr float IN_L_INPUT[2] = {10.00f, 70.00f};
 constexpr float IN_R_INPUT[2] = {22.00f, 70.00f};
+constexpr float SECTION_INPUT[2] = {96.00f, 70.00f};
 constexpr float TRIM_PARAM[2] = {37.00f, 70.00f};
 constexpr float SENS_PARAM[2] = {53.00f, 70.00f};
 constexpr float BEAT_LIGHT[2] = {70.00f, 70.00f};

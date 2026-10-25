@@ -1,6 +1,7 @@
 // VjLink.cpp: VJ Link, 20 HP. Sends this patch's audio analysis to My Lil VJ over a loopMIDI port (channel 1) and
 // turns what the VJ sends back (channel 2) into CV and gates. Protocol: docs/PROTOCOL.md.
 // Author: Ari Klopfer / A_Development · MIT
+#include <cmath>
 #include "Analyzer.h"
 #include "Protocol.h"
 #include "layout.hpp"
@@ -10,7 +11,7 @@
 struct VjLink : Module
 {
     enum ParamId { SENS_PARAM, TRIM_PARAM, PARAMS_LEN };   // append only: patch files store params by id
-    enum InputId { IN_L_INPUT, IN_R_INPUT, INPUTS_LEN };
+    enum InputId { IN_L_INPUT, IN_R_INPUT, SECTION_INPUT, INPUTS_LEN };
     enum OutputId
     {
         BASS_OUTPUT, MID_OUTPUT, HIGH_OUTPUT, VOL_OUTPUT, PULSE_OUTPUT, BEAT_OUTPUT,
@@ -39,6 +40,7 @@ struct VjLink : Module
         configParam (TRIM_PARAM, -40.f, 20.f, -20.f, "Input trim (lower it if the meter's lime bars sit at the top)", " dB");
         configInput (IN_L_INPUT, "Audio left (or mono)");
         configInput (IN_R_INPUT, "Audio right (normalled to left)");
+        configInput (SECTION_INPUT, "Song section (1 V per section, 0-7 V)");
         const char* names[OUTPUTS_LEN] = {
             "VJ bass (0-10 V)", "VJ mid (0-10 V)", "VJ high (0-10 V)", "VJ volume (0-10 V)", "VJ beat envelope (0-10 V)", "VJ beat (gate)",
             "Camera motion energy (0-10 V)", "Camera motion X (0-10 V)", "Camera motion Y (0-10 V)",
@@ -73,6 +75,7 @@ struct VjLink : Module
             shown = analyzer.frame();
             msgs.clear();
             sender.encodeToVj (shown, msgs);
+            sender.section ((int) std::lround (inputs[SECTION_INPUT].getVoltage()), msgs);
             for (const vjlink::Msg& m : msgs) send (m);
         }
 
@@ -191,6 +194,7 @@ struct VjLinkWidget : ModuleWidget
 
         addInput (createInputCentered<PJ301MPort> (at (L::IN_L_INPUT), module, VjLink::IN_L_INPUT));
         addInput (createInputCentered<PJ301MPort> (at (L::IN_R_INPUT), module, VjLink::IN_R_INPUT));
+        addInput (createInputCentered<PJ301MPort> (at (L::SECTION_INPUT), module, VjLink::SECTION_INPUT));
         addParam (createParamCentered<Rogan1PSWhite> (at (L::SENS_PARAM), module, VjLink::SENS_PARAM));
         addParam (createParamCentered<Rogan1PSWhite> (at (L::TRIM_PARAM), module, VjLink::TRIM_PARAM));
         addChild (createLightCentered<MediumLight<LimeLight>> (at (L::BEAT_LIGHT), module, VjLink::BEAT_LIGHT));

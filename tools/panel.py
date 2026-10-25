@@ -64,7 +64,7 @@ OUT_IDS = (
     ('LFO1', 'LFO2', 'LFO3', 'LFO4', 'CLIP', 'DECK'),
 )
 LINK = [
-    ('IN_L_INPUT', 'in', 10, 70, 'IN L'), ('IN_R_INPUT', 'in', 22, 70, 'IN R'),
+    ('IN_L_INPUT', 'in', 10, 70, 'IN L'), ('IN_R_INPUT', 'in', 22, 70, 'IN R'), ('SECTION_INPUT', 'in', 96, 70, 'SEC'),
     ('TRIM_PARAM', 'knob', 37, 70, 'TRIM'),
     ('SENS_PARAM', 'knob', 53, 70, 'BEAT THR'),
     ('BEAT_LIGHT', 'light', 70, 70, 'BEAT'), ('LINK_LIGHT', 'light', 86, 70, 'LINK'),
