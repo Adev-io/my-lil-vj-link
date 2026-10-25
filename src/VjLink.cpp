@@ -5,6 +5,7 @@
 #include "Protocol.h"
 #include "layout.hpp"
 #include "plugin.hpp"
+#include "TalkingFace.hpp"
 
 struct VjLink : Module
 {
@@ -28,7 +29,8 @@ struct VjLink : Module
     dsp::PulseGenerator gates[3];   // beat, clip, deck, as sent by the VJ
     float preparedSr = 0.f;
     float sinceVj = 1e9f;           // seconds since the last channel 2 message
-    vjlink::Frame shown;            // the meter reads this from the UI thread; a torn read only misdraws one frame
+    FaceTap face;                   // the mascot's mouth; the audio thread writes, the face widget reads
+    vjlink::Frame shown;           // the meter reads this from the UI thread; a torn read only misdraws one frame
 
     VjLink()
     {
@@ -65,6 +67,7 @@ struct VjLink : Module
 
         const float l = inputs[IN_L_INPUT].getVoltage();
         const float x = inputs[IN_R_INPUT].isConnected() ? 0.5f * (l + inputs[IN_R_INPUT].getVoltage()) : l;
+        face.push (clamp (x / 5.f, -1.f, 1.f), args.sampleRate);   // the mascot's mouth follows the audio in
         if (analyzer.push (x / 5.f))   // Rack audio is ±5 V
         {
             shown = analyzer.frame();
@@ -164,6 +167,11 @@ struct VjLinkWidget : ModuleWidget
         addChild (createWidget<ScrewBlack> (Vec (box.size.x - 2 * RACK_GRID_WIDTH, 0)));
         addChild (createWidget<ScrewBlack> (Vec (RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
         addChild (createWidget<ScrewBlack> (Vec (box.size.x - 2 * RACK_GRID_WIDTH, RACK_GRID_HEIGHT - RACK_GRID_WIDTH)));
+
+        TalkingFace* face = createWidget<TalkingFace> (mm2px (Vec (L::FACE[0] - L::FACE[2], L::FACE[1] - L::FACE[2])));
+        face->box.size = mm2px (Vec (2 * L::FACE[2], 2 * L::FACE[2]));
+        if (module) face->tap = &module->face;
+        addChild (face);
 
         LinkMeter* meter = createWidget<LinkMeter> (Vec());
         place (meter, L::METER);

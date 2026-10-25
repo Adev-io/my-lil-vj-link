@@ -29,5 +29,6 @@ constexpr float DECK_OUTPUT[2] = {91.00f, 113.50f};
 constexpr float METER[4] = {4.00f, 11.00f, 93.60f, 29.00f};
 constexpr float OUT_MIDI[4] = {4.00f, 46.00f, 45.30f, 17.00f};
 constexpr float IN_MIDI[4] = {52.30f, 46.00f, 45.30f, 17.00f};
+constexpr float FACE[3] = {87.14f, 4.30f, 3.10f};
 }
 }

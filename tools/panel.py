@@ -44,6 +44,7 @@ def text(s, x, y, size, fill, anchor='middle', stroke=0.0):
 
 
 # Rectangles the widget fills with displays: x, y, w, h in mm.
+FACE = (W - 14.46, 4.3, 3.1)   # x, y, r of the mascot in the title band (clear of the right screw)
 RECTS = {
     'METER': (4, 11, W - 8, 29),
     'OUT_MIDI': (4, 46, 45.3, 17),
@@ -70,6 +71,18 @@ LINK = [
 ] + [(OUT_IDS[r][c] + '_OUTPUT', 'out', C[c], ROWS[r], OUT_LABELS[r][c]) for r in range(3) for c in range(6)]
 
 
+def mascot(cx, cy, r):
+    """The My lil face: magenta disc, dot eyes, a flat mouth (the widget draws the live mouth over it)."""
+    e = r * 0.37
+    return ''.join([
+        '<circle cx="%g" cy="%g" r="%g" fill="%s"/>' % (cx, cy, r, MAGENTA),
+        '<circle cx="%g" cy="%g" r="%g" fill="%s"/>' % (cx - e, cy - r * 0.32, r * 0.145, INK),
+        '<circle cx="%g" cy="%g" r="%g" fill="%s"/>' % (cx + e, cy - r * 0.32, r * 0.145, INK),
+        '<path d="M %g %g h %g" fill="none" stroke="%s" stroke-width="%g" stroke-linecap="round"/>'
+        % (cx - r * 0.58, cy + r * 0.45, r * 1.16, INK, r * 0.16),
+    ])
+
+
 def panel():
     out = [
         '<?xml version="1.0" encoding="UTF-8"?>',
@@ -77,6 +90,7 @@ def panel():
         '<rect width="%g" height="%g" fill="%s"/>' % (W, H, INK),
         '<rect width="%g" height="8.6" fill="%s"/>' % (W, LIME),
         text('MY LIL VJ LINK', W / 2, 6.3, 4.3, INK, stroke=0.39),
+        mascot(*FACE),
         '<rect x="3.5" y="80.5" width="%g" height="42" rx="2" fill="%s"/>' % (W - 7, INK2),   # what the VJ sends back
         text('TO VJ', RECTS['OUT_MIDI'][0] + RECTS['OUT_MIDI'][2] / 2, 44.6, 2.6, LIME, stroke=0.2),
         text('FROM VJ', RECTS['IN_MIDI'][0] + RECTS['IN_MIDI'][2] / 2, 44.6, 2.6, MAGENTA, stroke=0.2),
@@ -103,6 +117,7 @@ def header():
              '#pragma once', 'namespace layout {', 'namespace vjlink {']
     lines += ['constexpr float %s[2] = {%.2ff, %.2ff};' % (i, x, y) for i, _, x, y, _ in LINK]
     lines += ['constexpr float %s[4] = {%.2ff, %.2ff, %.2ff, %.2ff};' % ((k,) + r) for k, r in RECTS.items()]
+    lines += ['constexpr float FACE[3] = {%.2ff, %.2ff, %.2ff};' % FACE]
     lines += ['}', '}', '']
     return '\n'.join(lines)
 
