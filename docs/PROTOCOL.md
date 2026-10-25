@@ -32,6 +32,7 @@ still works, and refines the value when CC n+32 arrives.
 | 10 (42) | | hand y |
 | 11 (43) | | hand openness |
 | 12–15 (44–47) | | VJ LFO 1–4; the LFO runs −1..1 and is sent as (v + 1) / 2 |
+| 16 | section (0–7), one 7-bit CC, value = index (not 14-bit) | |
 | 102–117 | spectrum band 0–15, one 7-bit CC each (byte >> 1) | |
 
 ## Events: notes on channel 2
@@ -49,6 +50,7 @@ Note-on with velocity 127, note-off one frame later.
 - DAW side: 60 frames per second. VJ side: 30 frames per second.
 - Only levels that changed are sent. Once a second (every 60th DAW frame, every 30th VJ frame) everything is sent
   again, so a program that opens the port late catches up within a second.
+- Section is resent in the once-a-second refresh.
 
 ## What the DAW side measures
 
@@ -72,4 +74,5 @@ The plugins reproduce My Lil VJ's own analyser, so a band means the same thing w
 | channel 1, CC 1 = 0.5 | `B0 01 40`, `B0 21 00` |
 | channel 2, CC 12 = 0.25 | `B1 0C 20`, `B1 2C 00` |
 | channel 1, spectrum band 13 = byte 255 | `B0 73 7F` |
+| channel 1, section 3 | `B0 10 03` |
 | `B1 06 40` then `B1 26 00` | motion energy = 8192 / 16383 |

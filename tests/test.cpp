@@ -177,6 +177,17 @@ int main()
         v.clear(); s.band (13, 254, v);
         check (v.empty(), "a band change below 7-bit resolution sends nothing", (double) v.size());
     }
+    {
+        vjlink::Sender s; std::vector<vjlink::Msg> v;
+        s.section (3, v);
+        check (v.size() == 1 && v[0].status == 0xB0 && v[0].data1 == 16 && v[0].data2 == 3, "section 3 -> B0 10 03");
+        v.clear(); s.section (3, v);
+        check (v.empty(), "unchanged section sends nothing");
+        v.clear(); s.section (99, v);
+        check (v.size() == 1 && v[0].data2 == 7, "section clamps to 0..7");
+        v.clear(); s.reset(); s.section (7, v);
+        check (v.size() == 1, "reset resends the section");
+    }
     { // a whole frame: 5 levels (10 msgs) + 16 bands the first time, nothing the second, everything again at frame 60
         vjlink::Sender s; vjlink::Frame f; f.bass = 0.3f; f.spectrum[2] = 200;
         std::vector<vjlink::Msg> v;

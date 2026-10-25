@@ -3,6 +3,7 @@
 // Author: Ari Klopfer / A_Development · MIT
 #pragma once
 #include "Analyzer.h"
+#include <algorithm>
 #include <cmath>
 #include <cstdint>
 #include <vector>
@@ -20,6 +21,8 @@ enum Cc
 };
 static const int kLevels = 15;      // CC 1..15
 static const int kSpecCc = 102;     // CC 102..117: spectrum band 0..15, 7-bit (DAW -> VJ)
+static const int kSectionCc = 16;   // song section index 0..7, one 7-bit CC (DAW -> VJ)
+static const int kSections = 8;
 enum Note { NOTE_BEAT = 36, NOTE_CLIP = 37, NOTE_DECK = 38 };   // VJ -> DAW gates
 
 struct Msg { uint8_t status, data1, data2; };
@@ -52,6 +55,16 @@ public:
         if (v == last) return;
         last = v;
         out.push_back (Msg { (uint8_t) (0xB0 | kToVj), (uint8_t) (kSpecCc + b), (uint8_t) v });
+    }
+
+    // Song section 0..7, DAW -> VJ, one 7-bit CC; sent on change, resent after reset().
+    void section (int idx, std::vector<Msg>& out)
+    {
+        const int v = std::min (kSections - 1, std::max (0, idx));
+        int& last = sent[kToVj][kSectionCc];
+        if (v == last) return;
+        last = v;
+        out.push_back (Msg { (uint8_t) (0xB0 | kToVj), (uint8_t) kSectionCc, (uint8_t) v });
     }
 
     // One analysis frame, DAW -> VJ.
